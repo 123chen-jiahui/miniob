@@ -135,6 +135,7 @@ RC CliCommunicator::init(int fd, unique_ptr<Session> session, const string &addr
     return rc;
   }
 
+  // cli模式下，输出是标准输出
   if (fd == STDIN_FILENO) {
     write_fd_ = STDOUT_FILENO;
     delete writer_;

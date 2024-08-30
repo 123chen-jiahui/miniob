@@ -64,7 +64,7 @@ void parse_parameter(int argc, char **argv)
       case 's': process_param->set_unix_socket_path(optarg); break;
       case 'p': process_param->set_server_port(atoi(optarg)); break;
       case 'P': process_param->set_protocol(optarg); break;
-      case 'f': process_param->set_conf(optarg); break;
+      case 'f': process_param->set_conf(optarg); break; // 设置observer配置文件路径
       case 'o': process_param->set_std_out(optarg); break;
       case 'e': process_param->set_std_err(optarg); break;
       case 't': process_param->set_trx_kit_name(optarg); break;
@@ -85,6 +85,8 @@ Server *init_server()
   map<string, string> net_section = get_properties()->get(NET);
 
   ProcessParam *process_param = the_process_param();
+
+  // 处理net section
 
   long listen_addr        = INADDR_ANY;
   long max_connection_num = MAX_CONNECTION_NUM_DEFAULT;
@@ -112,6 +114,8 @@ Server *init_server()
       str_to_val(str, port);
     }
   }
+
+  // 设置server param
 
   ServerParam server_param;
   server_param.listen_addr        = listen_addr;
@@ -187,14 +191,14 @@ int main(int argc, char **argv)
 
   parse_parameter(argc, argv);
 
-  rc = init(the_process_param());
+  rc = init(the_process_param()); // 初始化操作，解析ini文件等
   if (rc != STATUS_SUCCESS) {
     cerr << "Shutdown due to failed to init!" << endl;
     cleanup();
     return rc;
   }
 
-  g_server = init_server();
+  g_server = init_server(); // 初始化observer
   g_server->serve();
 
   LOG_INFO("Server stopped");

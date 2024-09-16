@@ -157,6 +157,7 @@ RC JavaThreadPoolThreadHandler::new_connection(Communicator *communicator)
   /// 我们这里不使用边缘触发。
   /// 注意这里没有加 EV_PERSIST，表示事件触发后会自动从event_base中删除，需要自己再手动加上这个标识。这是有必
   /// 要的，因为客户端发出一个请求后，我们再返回客户端消息之前，不再希望接收新的消息。
+  // 有关libevent，可以参考https://blog.csdn.net/weixin_44498318/article/details/132866023
   struct event *ev = event_new(event_base_, fd, EV_READ, event_callback, ag);
   if (nullptr == ev) {
     LOG_ERROR("failed to create event");

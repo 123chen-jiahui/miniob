@@ -166,7 +166,7 @@ int NetServer::start_tcp_server()
     return -1;
   }
 
-  ret = set_non_block(server_socket_);
+  ret = set_non_block(server_socket_); // 设置socket为非阻塞模式
   if (ret < 0) {
     LOG_ERROR("Failed to set socket option non-blocking:%s. ", strerror(errno));
     ::close(server_socket_);

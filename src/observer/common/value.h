@@ -18,6 +18,15 @@ See the Mulan PSL v2 for more details. */
 #include "common/lang/memory.h"
 #include "common/type/attr_type.h"
 #include "common/type/data_type.h"
+#include <cstdint>
+
+struct date {
+  int32_t year;
+  int32_t month;
+  int32_t day;
+};
+
+typedef struct date date_t;
 
 /**
  * @brief 属性的值
@@ -29,9 +38,11 @@ See the Mulan PSL v2 for more details. */
 class Value final
 {
 public:
+// 友元类，这些类可以访问Value的私有成员变量
   friend class DataType;
   friend class IntegerType;
   friend class FloatType;
+  friend class DateType;
   friend class BooleanType;
   friend class CharType;
 
@@ -45,6 +56,8 @@ public:
   explicit Value(float val);
   explicit Value(bool val);
   explicit Value(const char *s, int len = 0);
+  // date
+  explicit Value(int *success, char *val);
 
   Value(const Value &other);
   Value(Value &&other);
@@ -106,6 +119,8 @@ public:
    */
   int    get_int() const;
   float  get_float() const;
+  // date
+  date_t get_date() const;
   string get_string() const;
   bool   get_boolean() const;
 
@@ -113,11 +128,13 @@ private:
   void set_int(int val);
   void set_float(float val);
   void set_string(const char *s, int len = 0);
+  // date
+  void set_date(int year, int month, int day);
   void set_string_from_other(const Value &other);
 
 private:
   AttrType attr_type_ = AttrType::UNDEFINED;
-  int      length_    = 0;
+  int      length_    = 0; // what is this
 
   union Val
   {
@@ -125,6 +142,8 @@ private:
     float   float_value_;
     bool    bool_value_;
     char   *pointer_value_;
+    // date
+    date_t date;
   } value_ = {.int_value_ = 0};
 
   /// 是否申请并占有内存, 目前对于 CHARS 类型 own_data_ 为true, 其余类型 own_data_ 为false

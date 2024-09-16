@@ -19,6 +19,9 @@ See the Mulan PSL v2 for more details. */
 #include "common/lang/sstream.h"
 #include "common/lang/string.h"
 #include "common/log/log.h"
+#include "common/type/attr_type.h"
+#include <cstdlib>
+#include <cstring>
 
 Value::Value(int val) { set_int(val); }
 
@@ -27,6 +30,28 @@ Value::Value(float val) { set_float(val); }
 Value::Value(bool val) { set_boolean(val); }
 
 Value::Value(const char *s, int len /*= 0*/) { set_string(s, len); }
+
+// date
+Value::Value(int *success, char *val) {
+  int  year, month, day;
+  char dash;
+  std::istringstream deserialize_stream;
+  deserialize_stream.clear();
+  deserialize_stream.str(val);
+  deserialize_stream >> year >> dash >> month >> dash >> day;
+  set_date(year, month, day);
+
+  // 非法日期判断
+  // 1. 小月超过30天
+  if ((month == 4 || month == 6 || month == 9 || month == 11) && day > 30) {
+    *success = 0;
+  }
+  // 2. 2月超过29天(闰年)/28天(非闰年)
+  int is_leap = ((year % 400 == 0) || (year % 4 == 0 && year % 100 != 0));
+  if (month == 2 && day > 28 + is_leap) {
+    *success = 0;
+  }
+}
 
 Value::Value(const Value &other)
 {
@@ -107,6 +132,7 @@ void Value::reset()
   own_data_  = false;
 }
 
+// 从数据库中以二进制的形式读上来以后怎么解释
 void Value::set_data(char *data, int length)
 {
   switch (attr_type_) {
@@ -120,6 +146,10 @@ void Value::set_data(char *data, int length)
     case AttrType::FLOATS: {
       value_.float_value_ = *(float *)data;
       length_             = length;
+    } break;
+    case AttrType::DATE: {
+      value_.date = *(date_t *)data;
+      length_     = length;
     } break;
     case AttrType::BOOLEANS: {
       value_.bool_value_ = *(int *)data != 0;
@@ -154,6 +184,16 @@ void Value::set_boolean(bool val)
   length_            = sizeof(val);
 }
 
+// date
+void Value::set_date(int year, int month, int day) {
+  reset();
+  attr_type_         = AttrType::DATE;
+  value_.date.year   = year;
+  value_.date.month  = month;
+  value_.date.day    = day;
+  length_            = sizeof(year) + sizeof(month) + sizeof(day);
+}
+
 void Value::set_string(const char *s, int len /*= 0*/)
 {
   reset();
@@ -184,6 +224,10 @@ void Value::set_value(const Value &value)
     case AttrType::FLOATS: {
       set_float(value.get_float());
     } break;
+    case AttrType::DATE: {
+      date_t date = value.get_date();
+      set_date(date.year, date.month, date.day);
+    }
     case AttrType::CHARS: {
       set_string(value.get_string().c_str());
     } break;
@@ -285,6 +329,16 @@ float Value::get_float() const
     }
   }
   return 0;
+}
+
+date_t Value::get_date() const
+{
+  if (attr_type_ == AttrType::DATE) {
+    return value_.date;
+  } else {
+    LOG_ERROR("type %d can not convert to date", attr_type_);
+    return date_t{0, 0, 0};
+  }
 }
 
 string Value::get_string() const { return this->to_string(); }

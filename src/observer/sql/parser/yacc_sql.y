@@ -20,9 +20,9 @@ string token_name(const char *sql_string, YYLTYPE *llocp)
   return string(sql_string + llocp->first_column, llocp->last_column - llocp->first_column + 1);
 }
 
-int yyerror(YYLTYPE *llocp, const char *sql_string, ParsedSqlResult *sql_result, yyscan_t scanner, const char *msg)
+int yyerror(YYLTYPE *llocp, const char *sql_string, ParsedSqlResult *sql_result, yyscan_t scanner, SqlCommandFlag flag, const char *msg)
 {
-  std::unique_ptr<ParsedSqlNode> error_sql_node = std::make_unique<ParsedSqlNode>(SCF_ERROR);
+  std::unique_ptr<ParsedSqlNode> error_sql_node = std::make_unique<ParsedSqlNode>(flag);
   error_sql_node->error.error_msg = msg;
   error_sql_node->error.line = llocp->first_line;
   error_sql_node->error.column = llocp->first_column;
@@ -62,6 +62,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
 %parse-param { const char * sql_string }
 %parse-param { ParsedSqlResult * sql_result }
 %parse-param { void * scanner }
+%parse-param { SqlCommandFlag flag }
 
 //标识tokens
 %token  SEMICOLON
@@ -89,6 +90,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
         INT_T
         STRING_T
         FLOAT_T
+        DATE_T
         HELP
         EXIT
         DOT //QUOTE
@@ -134,6 +136,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
 
 %token <number> NUMBER
 %token <floats> FLOAT
+%token <string> DATE
 %token <string> ID
 %token <string> SSS
 //非终结符
@@ -349,7 +352,11 @@ attr_def:
       $$ = new AttrInfoSqlNode;
       $$->type = (AttrType)$2;
       $$->name = $1;
-      $$->length = 4;
+      if ($$->type == AttrType::DATE) {
+        $$->length = 12;
+      } else {
+        $$->length = 4;
+      }
       free($1);
     }
     ;
@@ -360,6 +367,7 @@ type:
     INT_T      { $$ = static_cast<int>(AttrType::INTS); }
     | STRING_T { $$ = static_cast<int>(AttrType::CHARS); }
     | FLOAT_T  { $$ = static_cast<int>(AttrType::FLOATS); }
+    | DATE_T   { $$ = static_cast<int>(AttrType::DATE); }
     ;
 insert_stmt:        /*insert   语句的语法解析树*/
     INSERT INTO ID VALUES LBRACE value value_list RBRACE 
@@ -400,6 +408,17 @@ value:
     |FLOAT {
       $$ = new Value((float)$1);
       @$ = @1;
+    }
+    |DATE {
+      char *tmp = common::substr($1, 1, strlen($1) - 2);
+      int success = 1;
+      $$ = new Value(&success, tmp);
+      if (!success) {
+        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_DATE, "invalid date");
+      }
+      @$ = @1; /* 不知道有什么作用 */
+      free(tmp);
+      free($1);
     }
     |SSS {
       char *tmp = common::substr($1,1,strlen($1)-2);
@@ -493,7 +512,7 @@ expression_list:
       } else {
         $$ = new std::vector<std::unique_ptr<Expression>>;
       }
-      $$->emplace($$->begin(), $1);
+      $$->emplace($$->begin(), $1); /* 头插法，保证vector中表达式的顺序与原顺序一致 */
     }
     ;
 expression:
@@ -706,7 +725,7 @@ int sql_parse(const char *s, ParsedSqlResult *sql_result) {
   yyscan_t scanner;
   yylex_init(&scanner);
   scan_string(s, scanner);
-  int result = yyparse(s, sql_result, scanner);
+  int result = yyparse(s, sql_result, scanner, SCF_ERROR);
   yylex_destroy(scanner);
   return result;
 }

@@ -257,6 +257,7 @@ struct ErrorSqlNode
 enum SqlCommandFlag
 {
   SCF_ERROR = 0,
+  SCF_ERROR_DATE,
   SCF_CALC,
   SCF_SELECT,
   SCF_INSERT,

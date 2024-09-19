@@ -20,6 +20,7 @@ See the Mulan PSL v2 for more details. */
 #include "common/lang/algorithm.h"
 #include "common/log/log.h"
 #include "common/math/crc.h"
+#include "common/rc.h"
 #include "storage/buffer/disk_buffer_pool.h"
 #include "storage/buffer/buffer_pool_log.h"
 #include "storage/db/db.h"
@@ -832,21 +833,6 @@ RC BufferPoolManager::create_file(const char *file_name)
 
   close(fd);
   LOG_INFO("Successfully create %s.", file_name);
-  return RC::SUCCESS;
-}
-
-// 参照BufferPoolManager::create_file
-RC BufferPoolManager::remove_file(const char *file_name) {
-  if (!std::filesystem::exists(file_name)) {
-    LOG_ERROR("Failed to drop %s, becase data file does not exists.", file_name);
-    return RC::SCHEMA_TABLE_NOT_EXIST;
-  }
-
-  // 简单的删除文件
-  std::remove(file_name);
-
-  // 从buffer_pools_中删除
-  buffer_pools_.erase(file_name);
   return RC::SUCCESS;
 }
 

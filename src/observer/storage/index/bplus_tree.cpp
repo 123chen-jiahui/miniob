@@ -830,23 +830,6 @@ RC BplusTreeHandler::create(LogHandler &log_handler,
   return rc;
 }
 
-RC BplusTreeHandler::drop(LogHandler &log_handler,
-                            BufferPoolManager &bpm,
-                            const char *file_name)
-{
-  RC rc = bpm.remove_file(file_name);
-  if (OB_FAIL(rc)) {
-    LOG_WARN("Failed to remove file. file name=%s, rc=%d:%s", file_name, rc, strrc(rc));
-    return rc;
-  }
-  LOG_INFO("Successfully remove index file:%s", file_name);
-
-  // ...额这里不知道怎么写
-
-  // LOG_INFO("Successfully remove index file %s.", file_name);
-  return rc;
-}
-
 RC BplusTreeHandler::create(LogHandler &log_handler,
             DiskBufferPool &buffer_pool,
             AttrType attr_type,

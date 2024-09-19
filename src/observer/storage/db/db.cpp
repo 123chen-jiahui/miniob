@@ -174,8 +174,11 @@ RC Db::drop_table(const char *table_name) {
   }
 
   // 在打开的表中删除对应的表
-  // 何为打开的表？
-  opened_tables_.erase(table_name); // 如果没有也无所谓
+  if (opened_tables_.find(table_name) != opened_tables_.end()) {
+    opened_tables_.erase(table_name); // erase就能进行析构工作
+    delete table; // table是new出来的，需要手动delete
+  }
+
   LOG_INFO("Drop table success. table name=%s", table_name);
   return RC::SUCCESS;
 }

@@ -147,26 +147,14 @@ RC Table::drop(Db *db, const char *path, const char *name, const char *base_dir)
   std::remove(path);
 
   // 删除table_name.data文件，即数据文件
-  string             data_file = table_data_file(base_dir, name);
-  BufferPoolManager &bpm       = db->buffer_pool_manager();
-  rc                           = bpm.remove_file(data_file.c_str());
-  if (rc != RC::SUCCESS) {
-    LOG_ERROR("Failed to drop disk buffer pool of data file. file name=%s", data_file.c_str());
-    return rc;
-  }
+  string data_file = table_data_file(base_dir, name);
+  std::remove(data_file.c_str());
 
   // 删除table_name.index文件，即索引文件
-  for (auto index : indexes_) {
+  for (Index *index : indexes_) {
     const char *index_name = index->index_meta().name();
     string index_file = table_index_file(base_dir, name, index_name);
-    BplusTreeIndex *bplustree_index = static_cast<BplusTreeIndex *>(index);
-    rc = bplustree_index->drop(this, index_file.c_str());
-    if (rc != RC::SUCCESS) {
-      // delete index;
-      LOG_ERROR("Failed to drop bplus tree index. file name=%s, rc=%d:%s", index_file.c_str(), rc, strrc(rc));
-      return rc;
-    }
-    // delete index;
+    std::remove(index_file.c_str());
   }
   
   LOG_INFO("Successfully drop table %s:%s", base_dir, name);

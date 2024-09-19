@@ -12,8 +12,10 @@ See the Mulan PSL v2 for more details. */
 // Created by Meiyi & Wangyunlai on 2021/5/13.
 //
 
+#include <cstdio>
 #include <limits.h>
 #include <string.h>
+#include <filesystem>
 
 #include "common/defs.h"
 #include "common/lang/string.h"
@@ -124,6 +126,50 @@ RC Table::create(Db *db, int32_t table_id, const char *path, const char *name, c
   }
 
   LOG_INFO("Successfully create table %s:%s", base_dir, name);
+  return rc;
+}
+
+// 参照Table::create，Table::create_index
+RC Table::drop(Db *db, const char *path, const char *name, const char *base_dir) {
+  if (common::is_blank(name)) {
+    LOG_WARN("Name cannot be empty");
+    return RC::INVALID_ARGUMENT;
+  }
+
+  // 表文件不存在
+  if (!std::filesystem::exists(path)) {
+    return RC::SCHEMA_TABLE_NOT_EXIST;
+  }
+
+  RC rc = RC::SUCCESS;
+
+  // 删除table_name.table文件，即元数据文件
+  std::remove(path);
+
+  // 删除table_name.data文件，即数据文件
+  string             data_file = table_data_file(base_dir, name);
+  BufferPoolManager &bpm       = db->buffer_pool_manager();
+  rc                           = bpm.remove_file(data_file.c_str());
+  if (rc != RC::SUCCESS) {
+    LOG_ERROR("Failed to drop disk buffer pool of data file. file name=%s", data_file.c_str());
+    return rc;
+  }
+
+  // 删除table_name.index文件，即索引文件
+  for (auto index : indexes_) {
+    const char *index_name = index->index_meta().name();
+    string index_file = table_index_file(base_dir, name, index_name);
+    BplusTreeIndex *bplustree_index = static_cast<BplusTreeIndex *>(index);
+    rc = bplustree_index->drop(this, index_file.c_str());
+    if (rc != RC::SUCCESS) {
+      // delete index;
+      LOG_ERROR("Failed to drop bplus tree index. file name=%s, rc=%d:%s", index_file.c_str(), rc, strrc(rc));
+      return rc;
+    }
+    // delete index;
+  }
+  
+  LOG_INFO("Successfully drop table %s:%s", base_dir, name);
   return rc;
 }
 

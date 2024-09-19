@@ -161,6 +161,25 @@ RC Db::create_table(const char *table_name, span<const AttrInfoSqlNode> attribut
   return RC::SUCCESS;
 }
 
+// 参照Db::create_table
+RC Db::drop_table(const char *table_name) {
+  RC rc = RC::SUCCESS;
+
+  string table_file_path = table_meta_file(path_.c_str(), table_name);
+  Table *table = find_table(table_name);
+  rc = table->drop(this, table_file_path.c_str(), table_name, path_.c_str());
+  if (rc != RC::SUCCESS) {
+    LOG_ERROR("Failed to drop table %s:", table_name);
+    return rc;
+  }
+
+  // 在打开的表中删除对应的表
+  // 何为打开的表？
+  opened_tables_.erase(table_name); // 如果没有也无所谓
+  LOG_INFO("Drop table success. table name=%s", table_name);
+  return RC::SUCCESS;
+}
+
 Table *Db::find_table(const char *table_name) const
 {
   unordered_map<string, Table *>::const_iterator iter = opened_tables_.find(table_name);

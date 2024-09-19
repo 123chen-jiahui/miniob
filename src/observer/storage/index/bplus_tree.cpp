@@ -15,12 +15,14 @@ See the Mulan PSL v2 for more details. */
 
 #include <span>
 
+#include "common/rc.h"
 #include "storage/index/bplus_tree.h"
 #include "common/lang/lower_bound.h"
 #include "common/log/log.h"
 #include "common/global_context.h"
 #include "sql/parser/parse_defs.h"
 #include "storage/buffer/disk_buffer_pool.h"
+#include "storage/index/bplus_tree_log.h"
 
 using namespace common;
 
@@ -825,6 +827,23 @@ RC BplusTreeHandler::create(LogHandler &log_handler,
   }
 
   LOG_INFO("Successfully create index file %s.", file_name);
+  return rc;
+}
+
+RC BplusTreeHandler::drop(LogHandler &log_handler,
+                            BufferPoolManager &bpm,
+                            const char *file_name)
+{
+  RC rc = bpm.remove_file(file_name);
+  if (OB_FAIL(rc)) {
+    LOG_WARN("Failed to remove file. file name=%s, rc=%d:%s", file_name, rc, strrc(rc));
+    return rc;
+  }
+  LOG_INFO("Successfully remove index file:%s", file_name);
+
+  // ...额这里不知道怎么写
+
+  // LOG_INFO("Successfully remove index file %s.", file_name);
   return rc;
 }
 

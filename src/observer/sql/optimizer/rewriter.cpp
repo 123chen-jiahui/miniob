@@ -26,6 +26,7 @@ Rewriter::Rewriter()
   rewrite_rules_.emplace_back(new PredicatePushdownRewriter);
 }
 
+// 递归地rewrite LogicalOperator及其子算子
 RC Rewriter::rewrite(std::unique_ptr<LogicalOperator> &oper, bool &change_made)
 {
   RC rc = RC::SUCCESS;

@@ -379,6 +379,10 @@ public:
    */
   RC delete_record(const RID *rid);
 
+  // 更新record
+  // 还不知道有什么参数，先空着
+  RC update_record(const char *data, const RID *rid);
+
   /**
    * @brief 插入一个新的记录到指定文件中，并返回该记录的标识符
    *

@@ -28,6 +28,7 @@ RC TableScanPhysicalOperator::open(Trx *trx)
   return rc;
 }
 
+// 找到第一行符合条件的record
 RC TableScanPhysicalOperator::next()
 {
   RC rc = RC::SUCCESS;

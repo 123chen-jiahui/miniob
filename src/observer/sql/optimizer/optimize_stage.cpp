@@ -43,7 +43,7 @@ RC OptimizeStage::handle_request(SQLStageEvent *sql_event)
 
   ASSERT(logical_operator, "logical operator is null");
 
-  rc = rewrite(logical_operator);
+  rc = rewrite(logical_operator); // 重写logical plan，有一些优化
   if (rc != RC::SUCCESS) {
     LOG_WARN("failed to rewrite plan. rc=%s", strrc(rc));
     return rc;

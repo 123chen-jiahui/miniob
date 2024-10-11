@@ -41,5 +41,5 @@ public:
 private:
   Table              *table_ = nullptr;
   Trx                *trx_   = nullptr;
-  std::vector<Record> records_;
+  std::vector<Record> records_; // 记录要删除的records
 };

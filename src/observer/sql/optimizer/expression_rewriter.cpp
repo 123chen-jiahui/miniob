@@ -47,6 +47,7 @@ RC ExpressionRewriter::rewrite(unique_ptr<LogicalOperator> &oper, bool &change_m
     return rc;
   }
 
+  // 递归rewrite子算子
   vector<unique_ptr<LogicalOperator>> &child_opers = oper->children();
   for (unique_ptr<LogicalOperator> &child_oper : child_opers) {
     bool sub_change_made = false;

@@ -27,6 +27,8 @@ FilterStmt::~FilterStmt()
   filter_units_.clear();
 }
 
+// 将ConditionSqlNode转换为FilterUnit
+// FilterUnit由左右两个FilterObj和CompOp组成
 RC FilterStmt::create(Db *db, Table *default_table, std::unordered_map<std::string, Table *> *tables,
     const ConditionSqlNode *conditions, int condition_num, FilterStmt *&stmt)
 {

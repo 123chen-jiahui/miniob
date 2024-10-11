@@ -506,6 +506,34 @@ RC Table::delete_record(const Record &record)
   return rc;
 }
 
+RC Table::update_record(Record &record, char *data, const FieldMeta *field)
+{
+  RC rc = RC::SUCCESS;
+  // 更新record
+  rc = record_handler_->update_record(data, &record.rid());
+  if (rc != RC::SUCCESS) {
+    LOG_ERROR("Update record failed. table name=%s, rc=%s", table_meta_.name(), strrc(rc));
+    return rc;
+  }
+  // 更新索引
+  // 如果更新的字段是某个索引，为了更新该索引，需要删除原索引，插入新索引
+  // for (Index *index : indexes_) {
+  //   const IndexMeta index_meta = index->index_meta();
+  //   if (strcmp(index_meta.field(), field->name()) == 0) {
+  //     // 删除原索引，插入新索引
+  //     rc = index->delete_entry(record.data(), &record.rid());
+  //     ASSERT(RC::SUCCESS == rc, 
+  //          "failed to delete entry from index. table name=%s, index name=%s, rid=%s, rc=%s",
+  //          name(), index->index_meta().name(), record.rid().to_string().c_str(), strrc(rc));
+  //     rc = index->insert_entry(data, &record.rid());
+  //     ASSERT(RC::SUCCESS == rc, 
+  //          "failed to insert entry into index. table name=%s, index name=%s, rid=%s, rc=%s",
+  //          name(), index->index_meta().name(), record.rid().to_string().c_str(), strrc(rc));
+  //   }
+  // }
+  return rc;
+}
+
 RC Table::insert_entry_of_indexes(const char *record, const RID &rid)
 {
   RC rc = RC::SUCCESS;

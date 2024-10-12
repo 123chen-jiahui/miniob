@@ -24,9 +24,17 @@ See the Mulan PSL v2 for more details. */
 #include "sql/stmt/filter_stmt.h"
 #include <cstdint>
 
-UpdateStmt::UpdateStmt(Table *table, Value *values, int value_amount, FilterStmt *filter_stmt, const FieldMeta *field_meta)
+UpdateStmt::UpdateStmt(Table *table, const Value *values, int value_amount, FilterStmt *filter_stmt, const FieldMeta *field_meta)
     : table_(table), values_(values), value_amount_(value_amount), filter_stmt_(filter_stmt), field_meta_(field_meta)
 {}
+
+UpdateStmt::~UpdateStmt()
+{
+  if (nullptr != filter_stmt_) {
+    delete filter_stmt_;
+    filter_stmt_ = nullptr;
+  }
+}
 
 // 参考InsertStmt::create和DeleteStmt::create
 RC UpdateStmt::create(Db *db, const UpdateSqlNode &update, Stmt *&stmt)
@@ -66,10 +74,9 @@ RC UpdateStmt::create(Db *db, const UpdateSqlNode &update, Stmt *&stmt)
 
 
   // 获取value（只有一个）
-  Value *values = (Value *)&update.value;
+  const Value *values = &update.value;
 
-  // 检查condition?
-  // delete语句没有对其进行检查
+  // condition的检查工作会在FilterStmt中完成
 
   // 创建FilterStmt
   std::unordered_map<std::string, Table *> table_map;

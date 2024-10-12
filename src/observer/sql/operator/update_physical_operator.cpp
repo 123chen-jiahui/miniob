@@ -34,7 +34,7 @@ RC UpdatePhysicalOperator::open(Trx *trx)
 
     // 构造data
     char *data = record.data();
-    const char *new_data = value_->data();
+    const char *new_data = values_[0].data();
     int field_offset = field_->offset();
     int field_len = field_->len();
     memcpy(data + field_offset, new_data, field_len);
@@ -51,7 +51,7 @@ RC UpdatePhysicalOperator::open(Trx *trx)
   for (int i = 0; i < records_.size(); i ++) {
     Record &record = records_[i];
     char *data = datas_[i];
-    rc = trx_->update_record(table_, record, data, field_);
+    rc = trx_->update_record(table_, record, data);
     if (rc != RC::SUCCESS) {
       LOG_WARN("failed to update record: %s", strrc(rc));
       return rc;

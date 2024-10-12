@@ -42,6 +42,9 @@ RC FilterStmt::create(Db *db, Table *default_table, std::unordered_map<std::stri
     rc = create_filter_unit(db, default_table, tables, conditions[i], filter_unit);
     if (rc != RC::SUCCESS) {
       delete tmp_stmt;
+      if (filter_unit) {
+        delete filter_unit;
+      }
       LOG_WARN("failed to create filter unit. condition index=%d", i);
       return rc;
     }

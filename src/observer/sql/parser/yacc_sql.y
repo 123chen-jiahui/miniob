@@ -379,6 +379,10 @@ insert_stmt:        /*insert   语句的语法解析树*/
         delete $7;
       }
       $$->insertion.values.emplace_back(*$6);
+      /* 这里用emplace_back将一个Value对象放到vector中
+         当调用 emplace_back 时，std::vector 会在容器的内存中直接构造新的对象，
+         而不会先创建临时对象（即形参）再拷贝到容器中。传递给 emplace_back 的参数通过完美转发传递给对象的构造函数
+         总之这里会调用Value的复制构造函数，所以有了后面的delete $6*/
       std::reverse($$->insertion.values.begin(), $$->insertion.values.end());
       delete $6;
       free($3);
@@ -461,6 +465,9 @@ update_stmt:      /*  update 语句的语法解析树*/
         $$->update.conditions.swap(*$7);
         delete $7;
       }
+      /* 注意：模板代码这里和insert_stmt不一样，没有delete $6，但这是需要的
+         因为$$->update.value = *$6;使用Value的复制构造函数申请了内存，原内存需要释放，否则内存泄漏 */
+      delete $6;
       free($2);
       free($4);
     }

@@ -186,7 +186,7 @@ RC MvccTrx::delete_record(Table *table, Record &record)
   return RC::SUCCESS;
 }
 
-RC MvccTrx::update_record(Table *table, Record &record, char *data, const FieldMeta *field)
+RC MvccTrx::update_record(Table *table, Record &record, char *data)
 {
   return RC::UNIMPLEMENTED;
 }

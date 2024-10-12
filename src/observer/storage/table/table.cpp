@@ -506,7 +506,7 @@ RC Table::delete_record(const Record &record)
   return rc;
 }
 
-RC Table::update_record(Record &record, char *data, const FieldMeta *field)
+RC Table::update_record(Record &record, char *data)
 {
   RC rc = RC::SUCCESS;
   // 更新record

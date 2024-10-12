@@ -278,8 +278,9 @@ RC LogicalPlanGenerator::create_plan(DeleteStmt *delete_stmt, unique_ptr<Logical
 RC LogicalPlanGenerator::create_plan(UpdateStmt *update_stmt, unique_ptr<LogicalOperator> &logical_operator)
 {
   // 算子之间的组合
-  Table      *table       = update_stmt->table();
-  FilterStmt *filter_stmt = update_stmt->filter_stmt();
+  Table         *table       = update_stmt->table();
+  FilterStmt    *filter_stmt = update_stmt->filter_stmt();
+  vector<Value> values(update_stmt->values(), update_stmt->values() + update_stmt->value_amount());
   unique_ptr<LogicalOperator> table_get_oper(new TableGetLogicalOperator(table, ReadWriteMode::READ_WRITE));
 
   unique_ptr<LogicalOperator> predicate_oper;
@@ -289,7 +290,7 @@ RC LogicalPlanGenerator::create_plan(UpdateStmt *update_stmt, unique_ptr<Logical
     return rc;
   }
 
-  unique_ptr<LogicalOperator> update_oper(new UpdateLogicalOperator(table, update_stmt->values(), update_stmt->field()));
+  unique_ptr<LogicalOperator> update_oper(new UpdateLogicalOperator(table, values, update_stmt->field()));
 
   if (predicate_oper) {
     predicate_oper->add_child(std::move(table_get_oper));

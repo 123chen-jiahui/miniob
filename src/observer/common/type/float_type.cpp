@@ -49,7 +49,6 @@ RC FloatType::divide(const Value &left, const Value &right, Value &result) const
     result.set_float(numeric_limits<float>::max());
   } else {
     result.set_float(left.get_float() / right.get_float());
-    std::cout << "hello" << std::endl;
   }
   return RC::SUCCESS;
 }

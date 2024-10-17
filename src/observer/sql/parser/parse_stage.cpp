@@ -57,6 +57,7 @@ RC ParseStage::handle_request(SQLStageEvent *sql_event)
   } else if (sql_node->flag == SCF_ERROR_DATE || sql_node->flag == SCF_ERROR_AGGREGATION) {
     rc = RC::SQL_SYNTAX;
     sql_result->set_return_code(rc);
+    return rc;
   }
 
   sql_event->set_sql_node(std::move(sql_node));

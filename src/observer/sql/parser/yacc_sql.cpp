@@ -245,7 +245,7 @@ union YYSTYPE
   AttrInfoSqlNode *                          attr_info;
   Expression *                               expression;
   std::vector<std::unique_ptr<Expression>> * expression_list;
-  std::vector<Expression *> *                agg_fun_attr_list;
+  // std::vector<Expression *> *                agg_fun_attr_list;
   std::vector<Value> *                       value_list;
   std::vector<ConditionSqlNode> *            condition_list;
   std::vector<RelAttrSqlNode> *              rel_attr_list;
@@ -657,11 +657,11 @@ static const yytype_int16 yyrline[] =
      273,   279,   287,   301,   311,   335,   338,   351,   359,   373,
      376,   377,   378,   379,   382,   403,   406,   417,   421,   425,
      436,   445,   448,   455,   467,   485,   510,   519,   524,   535,
-     538,   541,   544,   547,   551,   554,   559,   565,   570,   582,
-     594,   606,   618,   633,   637,   649,   654,   657,   668,   673,
-     683,   688,   693,   707,   710,   716,   719,   724,   731,   743,
-     755,   767,   782,   783,   784,   785,   786,   787,   793,   798,
-     811,   819,   829,   830
+     538,   541,   544,   547,   551,   554,   559,   565,   570,   583,
+     596,   609,   622,   638,   641,   656,   661,   664,   675,   680,
+     690,   695,   700,   714,   717,   723,   726,   731,   738,   750,
+     762,   774,   789,   790,   791,   792,   793,   794,   800,   805,
+     818,   826,   836,   837
 };
 #endif
 
@@ -2190,130 +2190,137 @@ yyreduce:
   case 68:
 #line 570 "yacc_sql.y"
                                           {
-      if ((yyvsp[-1].agg_fun_attr_list)->size() > 1) {
-        for (int i = 0; i < (yyvsp[-1].agg_fun_attr_list)->size(); i ++) {
-          delete (*(yyvsp[-1].agg_fun_attr_list))[i];
-        }
-        // 错误处理
-        yyerror(&(yylsp[-3]), NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        (yyval.expression) = create_aggregate_expression("max", (*(yyvsp[-1].agg_fun_attr_list))[0], sql_string, &(yyloc));
-      }
-      delete (yyvsp[-1].agg_fun_attr_list);
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("max", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      (yyval.expression) = create_aggregate_expression("max", (yyvsp[-1].expression), sql_string, &(yyloc));
     }
-#line 2205 "yacc_sql.cpp"
+#line 2206 "yacc_sql.cpp"
     break;
 
   case 69:
-#line 582 "yacc_sql.y"
+#line 583 "yacc_sql.y"
                                           {
-      if ((yyvsp[-1].agg_fun_attr_list)->size() > 1) {
-        for (int i = 0; i < (yyvsp[-1].agg_fun_attr_list)->size(); i ++) {
-          delete (*(yyvsp[-1].agg_fun_attr_list))[i];
-        }
-        // 错误处理
-        yyerror(&(yylsp[-3]), NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        (yyval.expression) = create_aggregate_expression("min", (*(yyvsp[-1].agg_fun_attr_list))[0], sql_string, &(yyloc));
-      }
-      delete (yyvsp[-1].agg_fun_attr_list);
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("min", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      (yyval.expression) = create_aggregate_expression("min", (yyvsp[-1].expression), sql_string, &(yyloc));
     }
-#line 2222 "yacc_sql.cpp"
+#line 2224 "yacc_sql.cpp"
     break;
 
   case 70:
-#line 594 "yacc_sql.y"
+#line 596 "yacc_sql.y"
                                             {
-      if ((yyvsp[-1].agg_fun_attr_list)->size() > 1) {
-        for (int i = 0; i < (yyvsp[-1].agg_fun_attr_list)->size(); i ++) {
-          delete (*(yyvsp[-1].agg_fun_attr_list))[i];
-        }
-        // 错误处理
-        yyerror(&(yylsp[-3]), NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        (yyval.expression) = create_aggregate_expression("count", (*(yyvsp[-1].agg_fun_attr_list))[0], sql_string, &(yyloc));
-      }
-      delete (yyvsp[-1].agg_fun_attr_list);
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("count", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      (yyval.expression) = create_aggregate_expression("count", (yyvsp[-1].expression), sql_string, &(yyloc));
     }
-#line 2239 "yacc_sql.cpp"
+#line 2242 "yacc_sql.cpp"
     break;
 
   case 71:
-#line 606 "yacc_sql.y"
+#line 609 "yacc_sql.y"
                                           {
-      if ((yyvsp[-1].agg_fun_attr_list)->size() > 1) {
-        for (int i = 0; i < (yyvsp[-1].agg_fun_attr_list)->size(); i ++) {
-          delete (*(yyvsp[-1].agg_fun_attr_list))[i];
-        }
-        // 错误处理
-        yyerror(&(yylsp[-3]), NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        (yyval.expression) = create_aggregate_expression("avg", (*(yyvsp[-1].agg_fun_attr_list))[0], sql_string, &(yyloc));
-      }
-      delete (yyvsp[-1].agg_fun_attr_list);
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("avg", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      (yyval.expression) = create_aggregate_expression("avg", (yyvsp[-1].expression), sql_string, &(yyloc));
     }
-#line 2256 "yacc_sql.cpp"
+#line 2260 "yacc_sql.cpp"
     break;
 
   case 72:
-#line 618 "yacc_sql.y"
+#line 622 "yacc_sql.y"
                                           {
-      if ((yyvsp[-1].agg_fun_attr_list)->size() > 1) {
-        for (int i = 0; i < (yyvsp[-1].agg_fun_attr_list)->size(); i ++) {
-          delete (*(yyvsp[-1].agg_fun_attr_list))[i];
-        }
-        // 错误处理
-        yyerror(&(yylsp[-3]), NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        (yyval.expression) = create_aggregate_expression("sum", (*(yyvsp[-1].agg_fun_attr_list))[0], sql_string, &(yyloc));
-      }
-      delete (yyvsp[-1].agg_fun_attr_list);
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("sum", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      (yyval.expression) = create_aggregate_expression("avg", (yyvsp[-1].expression), sql_string, &(yyloc));
     }
-#line 2273 "yacc_sql.cpp"
+#line 2278 "yacc_sql.cpp"
     break;
 
   case 73:
-#line 633 "yacc_sql.y"
+#line 638 "yacc_sql.y"
                  {
-      (yyval.agg_fun_attr_list) = new std::vector<Expression *>;
-      (yyval.agg_fun_attr_list)->emplace_back((yyvsp[0].expression));
+      (yyval.expression) = (yyvsp[0].expression);
     }
-#line 2282 "yacc_sql.cpp"
+#line 2286 "yacc_sql.cpp"
     break;
 
   case 74:
-#line 637 "yacc_sql.y"
+#line 641 "yacc_sql.y"
                                            {
-      if ((yyvsp[0].agg_fun_attr_list) != nullptr) {
-        (yyval.agg_fun_attr_list) = (yyvsp[0].agg_fun_attr_list);
-      } else {
-        (yyval.agg_fun_attr_list) = new std::vector<Expression *>;
+      (yyval.expression) = nullptr;
+      // 到这里肯定有问题
+      if ((yyvsp[0].expression)) {
+        delete (yyvsp[0].expression);
       }
-      (yyval.agg_fun_attr_list)->emplace((yyval.agg_fun_attr_list)->begin(), (yyvsp[-2].expression));
+      if ((yyvsp[-2].expression)) {
+        delete (yyvsp[-2].expression);
+      }
+      yyerror(&(yylsp[-2]), NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
     }
-#line 2295 "yacc_sql.cpp"
+#line 2302 "yacc_sql.cpp"
     break;
 
   case 75:
-#line 649 "yacc_sql.y"
+#line 656 "yacc_sql.y"
     {
       std::string null_string = "";
       (yyval.expression) = new UnboundFieldExpr(null_string, null_string);
       (yyval.expression)->set_name(null_string);
     }
-#line 2305 "yacc_sql.cpp"
+#line 2312 "yacc_sql.cpp"
     break;
 
   case 76:
-#line 654 "yacc_sql.y"
+#line 661 "yacc_sql.y"
           {
       (yyval.expression) = new StarExpr();
     }
-#line 2313 "yacc_sql.cpp"
+#line 2320 "yacc_sql.cpp"
     break;
 
   case 77:
-#line 657 "yacc_sql.y"
+#line 664 "yacc_sql.y"
          {
       RelAttrSqlNode *node = new RelAttrSqlNode;
       node->attribute_name = (yyvsp[0].string);
@@ -2322,21 +2329,21 @@ yyreduce:
       delete node;
       free((yyvsp[0].string));
     }
-#line 2326 "yacc_sql.cpp"
+#line 2333 "yacc_sql.cpp"
     break;
 
   case 78:
-#line 668 "yacc_sql.y"
+#line 675 "yacc_sql.y"
        {
       (yyval.rel_attr) = new RelAttrSqlNode;
       (yyval.rel_attr)->attribute_name = (yyvsp[0].string);
       free((yyvsp[0].string));
     }
-#line 2336 "yacc_sql.cpp"
+#line 2343 "yacc_sql.cpp"
     break;
 
   case 79:
-#line 673 "yacc_sql.y"
+#line 680 "yacc_sql.y"
                 {
       (yyval.rel_attr) = new RelAttrSqlNode;
       (yyval.rel_attr)->relation_name  = (yyvsp[-2].string);
@@ -2344,29 +2351,29 @@ yyreduce:
       free((yyvsp[-2].string));
       free((yyvsp[0].string));
     }
-#line 2348 "yacc_sql.cpp"
+#line 2355 "yacc_sql.cpp"
     break;
 
   case 80:
-#line 683 "yacc_sql.y"
+#line 690 "yacc_sql.y"
        {
       (yyval.string) = (yyvsp[0].string);
     }
-#line 2356 "yacc_sql.cpp"
+#line 2363 "yacc_sql.cpp"
     break;
 
   case 81:
-#line 688 "yacc_sql.y"
+#line 695 "yacc_sql.y"
              {
       (yyval.relation_list) = new std::vector<std::string>();
       (yyval.relation_list)->push_back((yyvsp[0].string));
       free((yyvsp[0].string));
     }
-#line 2366 "yacc_sql.cpp"
+#line 2373 "yacc_sql.cpp"
     break;
 
   case 82:
-#line 693 "yacc_sql.y"
+#line 700 "yacc_sql.y"
                               {
       if ((yyvsp[0].relation_list) != nullptr) {
         (yyval.relation_list) = (yyvsp[0].relation_list);
@@ -2377,55 +2384,55 @@ yyreduce:
       (yyval.relation_list)->insert((yyval.relation_list)->begin(), (yyvsp[-2].string));
       free((yyvsp[-2].string));
     }
-#line 2381 "yacc_sql.cpp"
+#line 2388 "yacc_sql.cpp"
     break;
 
   case 83:
-#line 707 "yacc_sql.y"
+#line 714 "yacc_sql.y"
     {
       (yyval.condition_list) = nullptr;
     }
-#line 2389 "yacc_sql.cpp"
+#line 2396 "yacc_sql.cpp"
     break;
 
   case 84:
-#line 710 "yacc_sql.y"
+#line 717 "yacc_sql.y"
                            {
       (yyval.condition_list) = (yyvsp[0].condition_list);  
     }
-#line 2397 "yacc_sql.cpp"
+#line 2404 "yacc_sql.cpp"
     break;
 
   case 85:
-#line 716 "yacc_sql.y"
+#line 723 "yacc_sql.y"
     {
       (yyval.condition_list) = nullptr;
     }
-#line 2405 "yacc_sql.cpp"
+#line 2412 "yacc_sql.cpp"
     break;
 
   case 86:
-#line 719 "yacc_sql.y"
+#line 726 "yacc_sql.y"
                 {
       (yyval.condition_list) = new std::vector<ConditionSqlNode>;
       (yyval.condition_list)->emplace_back(*(yyvsp[0].condition));
       delete (yyvsp[0].condition);
     }
-#line 2415 "yacc_sql.cpp"
+#line 2422 "yacc_sql.cpp"
     break;
 
   case 87:
-#line 724 "yacc_sql.y"
+#line 731 "yacc_sql.y"
                                    {
       (yyval.condition_list) = (yyvsp[0].condition_list);
       (yyval.condition_list)->emplace_back(*(yyvsp[-2].condition));
       delete (yyvsp[-2].condition);
     }
-#line 2425 "yacc_sql.cpp"
+#line 2432 "yacc_sql.cpp"
     break;
 
   case 88:
-#line 732 "yacc_sql.y"
+#line 739 "yacc_sql.y"
     {
       (yyval.condition) = new ConditionSqlNode;
       (yyval.condition)->left_is_attr = 1;
@@ -2437,11 +2444,11 @@ yyreduce:
       delete (yyvsp[-2].rel_attr);
       delete (yyvsp[0].value);
     }
-#line 2441 "yacc_sql.cpp"
+#line 2448 "yacc_sql.cpp"
     break;
 
   case 89:
-#line 744 "yacc_sql.y"
+#line 751 "yacc_sql.y"
     {
       (yyval.condition) = new ConditionSqlNode;
       (yyval.condition)->left_is_attr = 0;
@@ -2453,11 +2460,11 @@ yyreduce:
       delete (yyvsp[-2].value);
       delete (yyvsp[0].value);
     }
-#line 2457 "yacc_sql.cpp"
+#line 2464 "yacc_sql.cpp"
     break;
 
   case 90:
-#line 756 "yacc_sql.y"
+#line 763 "yacc_sql.y"
     {
       (yyval.condition) = new ConditionSqlNode;
       (yyval.condition)->left_is_attr = 1;
@@ -2469,11 +2476,11 @@ yyreduce:
       delete (yyvsp[-2].rel_attr);
       delete (yyvsp[0].rel_attr);
     }
-#line 2473 "yacc_sql.cpp"
+#line 2480 "yacc_sql.cpp"
     break;
 
   case 91:
-#line 768 "yacc_sql.y"
+#line 775 "yacc_sql.y"
     {
       (yyval.condition) = new ConditionSqlNode;
       (yyval.condition)->left_is_attr = 0;
@@ -2485,55 +2492,55 @@ yyreduce:
       delete (yyvsp[-2].value);
       delete (yyvsp[0].rel_attr);
     }
-#line 2489 "yacc_sql.cpp"
+#line 2496 "yacc_sql.cpp"
     break;
 
   case 92:
-#line 782 "yacc_sql.y"
+#line 789 "yacc_sql.y"
          { (yyval.comp) = EQUAL_TO; }
-#line 2495 "yacc_sql.cpp"
+#line 2502 "yacc_sql.cpp"
     break;
 
   case 93:
-#line 783 "yacc_sql.y"
+#line 790 "yacc_sql.y"
          { (yyval.comp) = LESS_THAN; }
-#line 2501 "yacc_sql.cpp"
+#line 2508 "yacc_sql.cpp"
     break;
 
   case 94:
-#line 784 "yacc_sql.y"
+#line 791 "yacc_sql.y"
          { (yyval.comp) = GREAT_THAN; }
-#line 2507 "yacc_sql.cpp"
+#line 2514 "yacc_sql.cpp"
     break;
 
   case 95:
-#line 785 "yacc_sql.y"
+#line 792 "yacc_sql.y"
          { (yyval.comp) = LESS_EQUAL; }
-#line 2513 "yacc_sql.cpp"
+#line 2520 "yacc_sql.cpp"
     break;
 
   case 96:
-#line 786 "yacc_sql.y"
+#line 793 "yacc_sql.y"
          { (yyval.comp) = GREAT_EQUAL; }
-#line 2519 "yacc_sql.cpp"
+#line 2526 "yacc_sql.cpp"
     break;
 
   case 97:
-#line 787 "yacc_sql.y"
+#line 794 "yacc_sql.y"
          { (yyval.comp) = NOT_EQUAL; }
-#line 2525 "yacc_sql.cpp"
+#line 2532 "yacc_sql.cpp"
     break;
 
   case 98:
-#line 793 "yacc_sql.y"
+#line 800 "yacc_sql.y"
     {
       (yyval.expression_list) = nullptr;
     }
-#line 2533 "yacc_sql.cpp"
+#line 2540 "yacc_sql.cpp"
     break;
 
   case 99:
-#line 799 "yacc_sql.y"
+#line 806 "yacc_sql.y"
     {
       char *tmp_file_name = common::substr((yyvsp[-3].string), 1, strlen((yyvsp[-3].string)) - 2);
       
@@ -2543,20 +2550,20 @@ yyreduce:
       free((yyvsp[0].string));
       free(tmp_file_name);
     }
-#line 2547 "yacc_sql.cpp"
+#line 2554 "yacc_sql.cpp"
     break;
 
   case 100:
-#line 812 "yacc_sql.y"
+#line 819 "yacc_sql.y"
     {
       (yyval.sql_node) = new ParsedSqlNode(SCF_EXPLAIN);
       (yyval.sql_node)->explain.sql_node = std::unique_ptr<ParsedSqlNode>((yyvsp[0].sql_node));
     }
-#line 2556 "yacc_sql.cpp"
+#line 2563 "yacc_sql.cpp"
     break;
 
   case 101:
-#line 820 "yacc_sql.y"
+#line 827 "yacc_sql.y"
     {
       (yyval.sql_node) = new ParsedSqlNode(SCF_SET_VARIABLE);
       (yyval.sql_node)->set_variable.name  = (yyvsp[-2].string);
@@ -2564,11 +2571,11 @@ yyreduce:
       free((yyvsp[-2].string));
       delete (yyvsp[0].value);
     }
-#line 2568 "yacc_sql.cpp"
+#line 2575 "yacc_sql.cpp"
     break;
 
 
-#line 2572 "yacc_sql.cpp"
+#line 2579 "yacc_sql.cpp"
 
       default: break;
     }
@@ -2806,7 +2813,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 832 "yacc_sql.y"
+#line 839 "yacc_sql.y"
 
 //_____________________________________________________________________
 extern void scan_string(const char *str, yyscan_t scanner);

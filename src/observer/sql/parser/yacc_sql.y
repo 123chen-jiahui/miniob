@@ -131,7 +131,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
   AttrInfoSqlNode *                          attr_info;
   Expression *                               expression;
   std::vector<std::unique_ptr<Expression>> * expression_list;
-  std::vector<Expression *> *                agg_fun_attr_list;
+  // std::vector<Expression *> *                agg_fun_attr_list;
   std::vector<Value> *                       value_list;
   std::vector<ConditionSqlNode> *            condition_list;
   std::vector<RelAttrSqlNode> *              rel_attr_list;
@@ -157,7 +157,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
 %type <comp>                comp_op
 %type <rel_attr>            rel_attr
 %type <expression>          agg_fun_attr
-%type <agg_fun_attr_list>   agg_fun_attr_list
+%type <expression>          agg_fun_attr_list
 %type <attr_infos>          attr_def_list
 %type <attr_info>           attr_def
 %type <value_list>          value_list
@@ -568,79 +568,86 @@ expression:
     // your code here
     // 聚合函数
     | MAX LBRACE agg_fun_attr_list RBRACE {
-      if ($3->size() > 1) {
-        for (int i = 0; i < $3->size(); i ++) {
-          delete (*$3)[i];
-        }
-        // 错误处理
-        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        $$ = create_aggregate_expression("max", (*$3)[0], sql_string, &@$);
-      }
-      delete $3;
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("max", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      $$ = create_aggregate_expression("max", $3, sql_string, &@$);
     }
     | MIN LBRACE agg_fun_attr_list RBRACE {
-      if ($3->size() > 1) {
-        for (int i = 0; i < $3->size(); i ++) {
-          delete (*$3)[i];
-        }
-        // 错误处理
-        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        $$ = create_aggregate_expression("min", (*$3)[0], sql_string, &@$);
-      }
-      delete $3;
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("min", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      $$ = create_aggregate_expression("min", $3, sql_string, &@$);
     }
     | COUNT LBRACE agg_fun_attr_list RBRACE {
-      if ($3->size() > 1) {
-        for (int i = 0; i < $3->size(); i ++) {
-          delete (*$3)[i];
-        }
-        // 错误处理
-        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        $$ = create_aggregate_expression("count", (*$3)[0], sql_string, &@$);
-      }
-      delete $3;
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("count", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      $$ = create_aggregate_expression("count", $3, sql_string, &@$);
     }
     | AVG LBRACE agg_fun_attr_list RBRACE {
-      if ($3->size() > 1) {
-        for (int i = 0; i < $3->size(); i ++) {
-          delete (*$3)[i];
-        }
-        // 错误处理
-        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        $$ = create_aggregate_expression("avg", (*$3)[0], sql_string, &@$);
-      }
-      delete $3;
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("avg", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      $$ = create_aggregate_expression("avg", $3, sql_string, &@$);
     }
     | SUM LBRACE agg_fun_attr_list RBRACE {
-      if ($3->size() > 1) {
-        for (int i = 0; i < $3->size(); i ++) {
-          delete (*$3)[i];
-        }
-        // 错误处理
-        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
-      } else {
-        $$ = create_aggregate_expression("sum", (*$3)[0], sql_string, &@$);
-      }
-      delete $3;
+      // if ($3->size() > 1) {
+      //   for (int i = 0; i < $3->size(); i ++) {
+      //     delete (*$3)[i];
+      //   }
+      //   // 错误处理
+      //   yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      // } else {
+      //   $$ = create_aggregate_expression("sum", (*$3)[0], sql_string, &@$);
+      // }
+      // delete $3;
+      $$ = create_aggregate_expression("avg", $3, sql_string, &@$);
     }
     ;
 
 agg_fun_attr_list:
     agg_fun_attr {
-      $$ = new std::vector<Expression *>;
-      $$->emplace_back($1);
+      $$ = $1;
     }
     | agg_fun_attr COMMA agg_fun_attr_list {
-      if ($3 != nullptr) {
-        $$ = $3;
-      } else {
-        $$ = new std::vector<Expression *>;
+      $$ = nullptr;
+      // 到这里肯定有问题
+      if ($3) {
+        delete $3;
       }
-      $$->emplace($$->begin(), $1);
+      if ($1) {
+        delete $1;
+      }
+      yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
     }
     ;
 

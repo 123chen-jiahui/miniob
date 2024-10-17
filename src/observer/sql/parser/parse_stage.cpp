@@ -54,7 +54,7 @@ RC ParseStage::handle_request(SQLStageEvent *sql_event)
     sql_result->set_return_code(rc);
     sql_result->set_state_string("Failed to parse sql");
     return rc;
-  } else if (sql_node->flag == SCF_ERROR_DATE) {
+  } else if (sql_node->flag == SCF_ERROR_DATE || sql_node->flag == SCF_ERROR_AGGREGATION) {
     rc = RC::SQL_SYNTAX;
     sql_result->set_return_code(rc);
   }

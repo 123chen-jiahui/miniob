@@ -113,8 +113,14 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
         LE
         GE
         NE
+        MAX
+        MIN
+        COUNT
+        AVG
+        SUM
 
 /** union 中定义各种数据类型，真实生成的代码也是union类型，所以不能有非POD类型的数据 **/
+// 相当于给数据类型取别名
 %union {
   ParsedSqlNode *                            sql_node;
   ConditionSqlNode *                         condition;
@@ -125,6 +131,7 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
   AttrInfoSqlNode *                          attr_info;
   Expression *                               expression;
   std::vector<std::unique_ptr<Expression>> * expression_list;
+  std::vector<Expression *> *                agg_fun_attr_list;
   std::vector<Value> *                       value_list;
   std::vector<ConditionSqlNode> *            condition_list;
   std::vector<RelAttrSqlNode> *              rel_attr_list;
@@ -149,6 +156,8 @@ UnboundAggregateExpr *create_aggregate_expression(const char *aggregate_name,
 %type <string>              relation
 %type <comp>                comp_op
 %type <rel_attr>            rel_attr
+%type <expression>          agg_fun_attr
+%type <agg_fun_attr_list>   agg_fun_attr_list
 %type <attr_infos>          attr_def_list
 %type <attr_info>           attr_def
 %type <value_list>          value_list
@@ -557,6 +566,102 @@ expression:
       $$ = new StarExpr();
     }
     // your code here
+    // 聚合函数
+    | MAX LBRACE agg_fun_attr_list RBRACE {
+      if ($3->size() > 1) {
+        for (int i = 0; i < $3->size(); i ++) {
+          delete (*$3)[i];
+        }
+        // 错误处理
+        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      } else {
+        $$ = create_aggregate_expression("max", (*$3)[0], sql_string, &@$);
+      }
+      delete $3;
+    }
+    | MIN LBRACE agg_fun_attr_list RBRACE {
+      if ($3->size() > 1) {
+        for (int i = 0; i < $3->size(); i ++) {
+          delete (*$3)[i];
+        }
+        // 错误处理
+        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      } else {
+        $$ = create_aggregate_expression("min", (*$3)[0], sql_string, &@$);
+      }
+      delete $3;
+    }
+    | COUNT LBRACE agg_fun_attr_list RBRACE {
+      if ($3->size() > 1) {
+        for (int i = 0; i < $3->size(); i ++) {
+          delete (*$3)[i];
+        }
+        // 错误处理
+        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      } else {
+        $$ = create_aggregate_expression("count", (*$3)[0], sql_string, &@$);
+      }
+      delete $3;
+    }
+    | AVG LBRACE agg_fun_attr_list RBRACE {
+      if ($3->size() > 1) {
+        for (int i = 0; i < $3->size(); i ++) {
+          delete (*$3)[i];
+        }
+        // 错误处理
+        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      } else {
+        $$ = create_aggregate_expression("avg", (*$3)[0], sql_string, &@$);
+      }
+      delete $3;
+    }
+    | SUM LBRACE agg_fun_attr_list RBRACE {
+      if ($3->size() > 1) {
+        for (int i = 0; i < $3->size(); i ++) {
+          delete (*$3)[i];
+        }
+        // 错误处理
+        yyerror(&@1, NULL, sql_result, NULL, SCF_ERROR_AGGREGATION, "aggregation func has too many fields");
+      } else {
+        $$ = create_aggregate_expression("sum", (*$3)[0], sql_string, &@$);
+      }
+      delete $3;
+    }
+    ;
+
+agg_fun_attr_list:
+    agg_fun_attr {
+      $$ = new std::vector<Expression *>;
+      $$->emplace_back($1);
+    }
+    | agg_fun_attr COMMA agg_fun_attr_list {
+      if ($3 != nullptr) {
+        $$ = $3;
+      } else {
+        $$ = new std::vector<Expression *>;
+      }
+      $$->emplace($$->begin(), $1);
+    }
+    ;
+
+agg_fun_attr:
+    /* empty */
+    {
+      std::string null_string = "";
+      $$ = new UnboundFieldExpr(null_string, null_string);
+      $$->set_name(null_string);
+    }
+    | '*' {
+      $$ = new StarExpr();
+    }
+    | ID {
+      RelAttrSqlNode *node = new RelAttrSqlNode;
+      node->attribute_name = $1;
+      $$ = new UnboundFieldExpr(node->relation_name, node->attribute_name);
+      $$->set_name(token_name(sql_string, &@$));
+      delete node;
+      free($1);
+    }
     ;
 
 rel_attr:

@@ -39,7 +39,7 @@ RC ScalarGroupByPhysicalOperator::open(Trx *trx)
 
   ValueListTuple group_by_evaluated_tuple;
 
-  while (OB_SUCC(rc = child.next())) {
+  while (OB_SUCC(rc = child.next())) { // 获取一行
     Tuple *child_tuple = child.current_tuple();
     if (nullptr == child_tuple) {
       LOG_WARN("failed to get tuple from child operator. rc=%s", strrc(rc));

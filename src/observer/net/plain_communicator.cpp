@@ -200,6 +200,7 @@ RC PlainCommunicator::write_result_internal(SessionEvent *event, bool &need_disc
   const TupleSchema &schema   = sql_result->tuple_schema();
   const int          cell_num = schema.cell_num();
 
+  // 写第一行，比如id | t_name | col1 | col2
   for (int i = 0; i < cell_num; i++) {
     const TupleCellSpec &spec  = schema.cell_at(i);
     const char          *alias = spec.alias();
@@ -274,7 +275,7 @@ RC PlainCommunicator::write_tuple_result(SqlResult *sql_result)
 {
   RC rc = RC::SUCCESS;
   Tuple *tuple = nullptr;
-  while (RC::SUCCESS == (rc = sql_result->next_tuple(tuple))) {
+  while (RC::SUCCESS == (rc = sql_result->next_tuple(tuple))) { // 对于select语句，这里的tuple是ExpressionTuple
     assert(tuple != nullptr);
 
     int cell_num = tuple->cell_num();
